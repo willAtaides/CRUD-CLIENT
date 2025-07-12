@@ -1,8 +1,6 @@
 package com.onvex.crudclient.controllers;
 
 import com.onvex.crudclient.dto.ClientDTO;
-import com.onvex.crudclient.entities.Client;
-import com.onvex.crudclient.repositories.ClientRepository;
 import com.onvex.crudclient.services.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,8 +10,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/clients")
@@ -41,9 +37,13 @@ public class ClientController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ClientDTO> pudate(@PathVariable Long id,@RequestBody ClientDTO dto ){
+    public ResponseEntity<ClientDTO> update(@PathVariable Long id, @RequestBody ClientDTO dto ){
         dto= service.update(id, dto);
         return ResponseEntity.ok(dto);
     }
-
+    @DeleteMapping (value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
 }
