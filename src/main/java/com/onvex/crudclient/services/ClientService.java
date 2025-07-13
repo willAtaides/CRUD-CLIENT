@@ -3,7 +3,10 @@ package com.onvex.crudclient.services;
 import com.onvex.crudclient.dto.ClientDTO;
 import com.onvex.crudclient.entities.Client;
 import com.onvex.crudclient.repositories.ClientRepository;
+import com.onvex.crudclient.services.exceptions.ResourceNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,7 +23,7 @@ public class ClientService {
 
     @Transactional(readOnly = true)
     public ClientDTO findByid(Long id){
-        Client client = repository.findById(id).get();
+        Client client = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Erro: cliente inexistente para o ID fornecido."));
         return new ClientDTO(client);
     }
 
@@ -39,10 +42,15 @@ public class ClientService {
     }
     @Transactional
     public ClientDTO update(Long id, ClientDTO dto){
-        Client entity = repository.getReferenceById(id);
-        copyDtoToEntity(dto, entity);
-        entity = repository.save(entity);
-        return new ClientDTO(entity);
+        try {
+            Client entity = repository.getReferenceById(id);
+            copyDtoToEntity(dto, entity);
+            entity = repository.save(entity);
+            return new ClientDTO(entity);
+        }
+        catch(EntityNotFoundException e){
+            throw new ResourceNotFoundException("Não foi possível atualizar: cliente com o ID informado não existe.");
+        }
     }
 
     private void copyDtoToEntity(ClientDTO dto, Client entity) {
@@ -55,8 +63,10 @@ public class ClientService {
 
     @Transactional
     public void delete(Long id){
-        repository.deleteById(id);
+        if(!repository.existsById(id)){
+            throw new ResourceNotFoundException("Não foi possível deletar: cliente com o ID informado não existe.");
+        }
+            repository.deleteById(id);
     }
-
-
+    
 }
