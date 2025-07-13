@@ -78,7 +78,7 @@ cd CRUD-CLIENT
 ```
 
 
-##🔗 Acesso ao Sistema
+## 🔗 Acesso ao Sistema
 
 Sistema: http://localhost:8080
 
@@ -164,7 +164,8 @@ Content-Type: application/json
 DELETE /clients/1
 ```
 
-##📬 Contato
+---
+## 📬 Contato
 Desenvolvido por Willian Ataides
 📧 Willian.ataides@hotmail.com
 
