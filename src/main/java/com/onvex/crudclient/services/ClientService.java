@@ -3,6 +3,7 @@ package com.onvex.crudclient.services;
 import com.onvex.crudclient.dto.ClientDTO;
 import com.onvex.crudclient.entities.Client;
 import com.onvex.crudclient.repositories.ClientRepository;
+import com.onvex.crudclient.services.exceptions.DatabaseException;
 import com.onvex.crudclient.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -35,12 +37,18 @@ public class ClientService {
 
     @Transactional
     public ClientDTO insert(ClientDTO dto){
-        Client entity = new Client();
-        copyDtoToEntity(dto, entity);
-        entity = repository.save(entity);
-        return new ClientDTO(entity);
+
+        try {
+            Client entity = new Client();
+            copyDtoToEntity(dto, entity);
+            entity = repository.save(entity);
+            return new ClientDTO(entity);
+        }
+        catch (DataIntegrityViolationException e){
+            throw new DatabaseException("Não foi possível adicionar: O CPF informado já está cadastrado para outro cliente.");
+        }
     }
-    @Transactional
+    @Transactional(propagation = Propagation.SUPPORTS)
     public ClientDTO update(Long id, ClientDTO dto){
         try {
             Client entity = repository.getReferenceById(id);
@@ -68,5 +76,5 @@ public class ClientService {
         }
             repository.deleteById(id);
     }
-    
+
 }

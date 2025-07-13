@@ -2,6 +2,10 @@ package com.onvex.crudclient.dto;
 
 import com.onvex.crudclient.entities.Client;
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDate;
 
@@ -38,10 +42,13 @@ public class ClientDTO {
         return id;
     }
 
+    @NotBlank(message = "Campo obrigatório não preenchido: Nome do cliente.")
     public String getName() {
         return name;
     }
 
+    @NotNull(message = "Campo obrigatório não preenchido: CPF do cliente.")
+    @Column(unique = true)
     public String getCpf() {
         return cpf;
     }
@@ -50,6 +57,8 @@ public class ClientDTO {
         return income;
     }
 
+    @NotNull(message = "Campo obrigatório não preenchido: Data de nascimento do cliente.")
+    @PastOrPresent(message = "A data de nascimento não pode ser uma data futura.")
     public LocalDate getBirthDate() {
         return birthDate;
     }
